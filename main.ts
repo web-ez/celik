@@ -1,8 +1,27 @@
 import { app, BrowserWindow } from "electron";
 import * as path from "path";
 import { isDev } from "./util/is-dev";
+import { registerHandle } from "./util/context-bridge";
+import { Devices } from "./util/smartcard";
+
+const scDevices: Devices = new (require("smartcard").Devices)();
+registerHandle("smartcard", "getDevices", () => {
+  return scDevices.listDevices().map((d) => d.name);
+});
+registerHandle("smartcard", "listenForDevices", (listenFn) => {
+  scDevices.on("device-activated", (event) => {
+    listenFn(event.devices);
+  });
+});
+registerHandle("smartcard", "listenForCard", (device, listenFn) => {
+  const d = scDevices.lookup(device);
+  d.on("card-inserted", (event) => {
+    listenFn(event.card.getAttr());
+  });
+});
 
 const createWindow = () => {
+  console.log(path.join(__dirname, "preload.js"));
   const win = new BrowserWindow({
     width: 800,
     height: 600,
@@ -12,7 +31,7 @@ const createWindow = () => {
   });
 
   if (isDev()) win.loadURL("http://localhost:3000");
-  else win.loadFile("index.html");
+  else win.loadFile(path.join(__dirname, "..", "app", "build", "index.html"));
 
   return win;
 };
@@ -20,6 +39,7 @@ const createWindow = () => {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
+
 app.whenReady().then(() => {
   createWindow();
 

@@ -1,9 +1,6 @@
-import { contextBridge, ipcMain, ipcRenderer } from "electron";
+import {  exposeHandles } from "./util/context-bridge";
 
-type Context = {
-  smartcard: {
-    getCards: () => string[];
-    listenForCards: () => void;
-    pickCard: (card: string) => boolean;
-  };
-};
+console.log("Preload...");
+exposeHandles("smartcard", ["getDevices", "listenForDevices", "listenForCard"]);
+
+// ipcMain.handle("smartcard:getCards", (da, x) => {});

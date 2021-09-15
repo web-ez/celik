@@ -1,4 +1,4 @@
-const devices: Devices = new (require("smartcard").Devices)();
+
 
 type DeviceEvents = {
   "device-activated": (event: { device: Device; devices: Device[] }) => void;
@@ -24,5 +24,4 @@ type Card = {
   getAttr: () => string;
 };
 
-export { Devices, Device, Card };
-export default devices;
+export { Devices, Device, Card, DeviceEvents, CardEvents };
