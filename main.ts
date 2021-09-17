@@ -8,20 +8,29 @@ const scDevices: Devices = new (require("smartcard").Devices)();
 registerHandle("smartcard", "getDevices", () => {
   return scDevices.listDevices().map((d) => d.name);
 });
-registerHandle("smartcard", "listenForDevices", (listenFn) => {
-  scDevices.on("device-activated", (event) => {
-    listenFn(event.devices);
-  });
-});
-registerHandle("smartcard", "listenForCard", (device, listenFn) => {
-  const d = scDevices.lookup(device);
-  d.on("card-inserted", (event) => {
-    listenFn(event.card.getAttr());
-  });
-});
+registerHandle(
+  "smartcard",
+  "waitForDevices",
+  () =>
+    new Promise((resolve, reject) => {
+      scDevices.on("device-activated", (event) => {
+        resolve(event.devices);
+      });
+    })
+);
+registerHandle(
+  "smartcard",
+  "waitForCard",
+  (device) =>
+    new Promise((resolve, reject) => {
+      const d = scDevices.lookup(device);
+      d.on("card-inserted", (event) => {
+        resolve(event.card.getAtr());
+      });
+    })
+);
 
 const createWindow = () => {
-  console.log(path.join(__dirname, "preload.js"));
   const win = new BrowserWindow({
     width: 800,
     height: 600,

@@ -21,7 +21,7 @@ type Device = {
   name: string;
 };
 type Card = {
-  getAttr: () => string;
+  getAtr: () => string;
 };
 
 export { Devices, Device, Card, DeviceEvents, CardEvents };

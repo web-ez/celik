@@ -4,8 +4,8 @@ import { Device } from "./smartcard";
 type Context = {
   smartcard: {
     getDevices: () => string[];
-    listenForDevices: (listenFn: (devices: Device[]) => void) => void;
-    listenForCard: (device: string, listenFn: (card: string) => void) => void;
+    waitForDevices: () => Promise<Device[]>;
+    waitForCard: (device: string) => Promise<string>;
   };
 };
 
@@ -38,15 +38,22 @@ type ToPromise<T extends fn> = (
 ) => Promise<ReturnType<T>>;
 
 type TransformedToPromises<T extends Record<string, fn>> = {
-  [P in keyof T]: ToPromise<T[P]>;
+  [P in keyof T]: ReturnType<T[P]> extends Promise<any>
+    ? T[P]
+    : ToPromise<T[P]>;
 };
 
-// const getCtx = <T1 extends keyof Context>(key: T1) => {
-//   return ((window || {}) as any)[key] as TransformedToPromises<Context[T1]>;
-// };
+export type ContextKey = keyof Context;
+export type ContextType<T extends ContextKey> = TransformedToPromises<
+  Context[T]
+>;
+
+export const getBridgeCtx = <T1 extends keyof Context>(key: T1) => {
+  return ((window || {}) as any)[key] as TransformedToPromises<Context[T1]>;
+};
 
 // export const context: {
 //   [K in keyof Context]: TransformedToPromises<Context[K]>;
 // } = {
-//   smartcard: getCtx("smartcard"),
+//   smartcard: getBridgeCtx("smartcard"),
 // };

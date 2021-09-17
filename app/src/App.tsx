@@ -1,9 +1,25 @@
+import { useEffect, useState } from "react";
 import "./App.css";
+import useBridgeContext from "./util/use-bridge-ctx";
 
 function App() {
+  const smartcardCtx = useBridgeContext("smartcard");
+
+  const [device, setDevice] = useState("");
+
+  useEffect(() => {
+    if (device) {
+      console.log("Picked device: ", device);
+      smartcardCtx.waitForCard(device).then((x) => {
+        console.log(x);
+      });
+    }
+  }, [device, smartcardCtx]);
+
   const clickHandle = () =>
-    (window as any).smartcard.getDevices().then((devs: string[]) => {
+    smartcardCtx.getDevices().then((devs: string[]) => {
       console.log(devs);
+      setDevice(devs[0]);
     });
 
   return (
