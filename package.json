@@ -39,6 +39,8 @@
     "app"
   ],
   "devDependencies": {
+    "@types/ffi-napi": "^4.0.4",
+    "@types/ref-napi": "^3.0.4",
     "electron-rebuild": "^3.2.3"
   }
 }

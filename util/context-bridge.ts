@@ -1,4 +1,5 @@
 import { BrowserWindow, contextBridge, ipcMain, ipcRenderer } from "electron";
+import { CelikAPICtx } from "./context/celik";
 import { SmartcardCtx } from "./context/smartcard";
 
 type StringKey<T> = keyof T & string;
@@ -16,11 +17,14 @@ type TransformedToPromises<T extends Record<string, fn>> = {
 
 type AppContext = {
   smartcard: SmartcardCtx;
+  celik: CelikAPICtx;
 };
-export type ContextKey = keyof AppContext;
+export type ContextKey = StringKey<AppContext>;
 export type ContextType<T extends ContextKey> = TransformedToPromises<
   AppContext[T]
->;
+> & {
+  removeListeners: (key: StringKey<AppContext[T]>) => void;
+};
 
 type EmitFn<T> = (
   win: BrowserWindow | null,
@@ -29,7 +33,7 @@ type EmitFn<T> = (
 
 const isListener = (key: string) => (key as string).startsWith("listen");
 
-const _createChannel = (key: string, method: string) => `${key}:${method}`;
+const _getChannelName = (key: string, method: string) => `${key}:${method}`;
 
 const _registerListener = (
   key: string,
@@ -38,19 +42,19 @@ const _registerListener = (
 ) => {
   const execEmit: EmitFn<any> = (win, ...args) => {
     if (win)
-      win.webContents.send(_createChannel(key, method), JSON.stringify(args));
+      win.webContents.send(_getChannelName(key, method), JSON.stringify(args));
   };
   if (fn) fn(execEmit);
   return execEmit;
 };
 
 const _registerHandle = (key: string, method: string, fn: fn) =>
-  ipcMain.handle(_createChannel(key, method), (ev, ...args) => fn(...args));
+  ipcMain.handle(_getChannelName(key, method), (ev, ...args) => fn(...args));
 
 const _exposeHandles = (key: string, methods: string[]) => {
   const api: any = {};
   methods.map((m) => {
-    const ch = _createChannel(key, m);
+    const ch = _getChannelName(key, m);
     if (isListener(m as any))
       api[m] = (listenFn: fn) => {
         ipcRenderer.on(ch, (ev, args) =>
@@ -59,6 +63,8 @@ const _exposeHandles = (key: string, methods: string[]) => {
       };
     else api[m] = (...args: any[]) => ipcRenderer.invoke(ch, ...args);
   });
+  api["removeListeners"] = (m: string) =>
+    ipcRenderer.removeAllListeners(_getChannelName(key, m));
   contextBridge.exposeInMainWorld(key, api);
 };
 
