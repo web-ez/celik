@@ -1,6 +1,7 @@
-import {  exposeHandles } from "./util/context-bridge";
+import SmartcardContext from "./util/context/smartcard";
 
 console.log("Preload...");
-exposeHandles("smartcard", ["getDevices", "waitForDevices", "waitForCard"]);
+
+SmartcardContext.expose();
 
 // ipcMain.handle("smartcard:getCards", (da, x) => {});

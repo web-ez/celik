@@ -1,37 +1,56 @@
 import { app, BrowserWindow } from "electron";
 import * as path from "path";
+import SmartcardContext from "./util/context/smartcard";
 import { isDev } from "./util/is-dev";
-import { registerHandle } from "./util/context-bridge";
-import { Devices } from "./util/smartcard";
 
-const scDevices: Devices = new (require("smartcard").Devices)();
-registerHandle("smartcard", "getDevices", () => {
-  return scDevices.listDevices().map((d) => d.name);
-});
-registerHandle(
-  "smartcard",
-  "waitForDevices",
-  () =>
-    new Promise((resolve, reject) => {
-      scDevices.on("device-activated", (event) => {
-        resolve(event.devices);
-      });
-    })
-);
-registerHandle(
-  "smartcard",
-  "waitForCard",
-  (device) =>
-    new Promise((resolve, reject) => {
-      const d = scDevices.lookup(device);
-      d.on("card-inserted", (event) => {
-        resolve(event.card.getAtr());
-      });
-    })
-);
+// import { registerHandle, registerListener } from "./util/context-bridge";
+// import { Devices } from "./util/smartcard";
+
+// const scDevices: Devices = new (require("smartcard").Devices)();
+
+// let win: BrowserWindow | null = null;
+// const emitCardDisconnect = registerListener(
+//   "smartcard",
+//   "listenCardDisconnected"
+// );
+// registerListener("smartcard", "listenForDevices", (emit) => {
+//   scDevices.on("device-activated", (event) => {
+//     emit(win, event.devices);
+//   });
+//   scDevices.on("device-deactivated", (event) => {
+//     emit(win, event.devices);
+//   });
+// });
+// registerHandle("smartcard", "getDevices", () => {
+//   return scDevices.listDevices().map((d) => d.name);
+// });
+// registerHandle(
+//   "smartcard",
+//   "waitForDevices",
+//   () =>
+//     new Promise((resolve, reject) => {
+//       scDevices.on("device-activated", (event) => {
+//         resolve(event.devices);
+//       });
+//     })
+// );
+// registerHandle(
+//   "smartcard",
+//   "waitForCard",
+//   (device) =>
+//     new Promise((resolve, reject) => {
+//       const d = scDevices.lookup(device);
+//       d.on("card-inserted", (event) => {
+//         resolve(event.card.getAtr());
+//       });
+//       d.on("card-removed", (event) => {
+//         emitCardDisconnect(win);
+//       });
+//     })
+// );
 
 const createWindow = () => {
-  const win = new BrowserWindow({
+  const _win = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
@@ -39,10 +58,15 @@ const createWindow = () => {
     },
   });
 
-  if (isDev()) win.loadURL("http://localhost:3000");
-  else win.loadFile(path.join(__dirname, "..", "app", "build", "index.html"));
+  if (isDev()) _win.loadURL("http://localhost:3000");
+  else _win.loadFile(path.join(__dirname, "..", "app", "build", "index.html"));
 
-  return win;
+  onCreatedWindow(_win);
+  return _win;
+};
+
+const onCreatedWindow = (w: BrowserWindow) => {
+  SmartcardContext.init(w);
 };
 
 // This method will be called when Electron has finished
