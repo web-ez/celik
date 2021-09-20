@@ -4,58 +4,14 @@ import CelikAPIContext from "./util/context/celik";
 import SmartcardContext from "./util/context/smartcard";
 import { isDev } from "./util/is-dev";
 
-// import { registerHandle, registerListener } from "./util/context-bridge";
-// import { Devices } from "./util/smartcard";
-
-// const scDevices: Devices = new (require("smartcard").Devices)();
-
-// let win: BrowserWindow | null = null;
-// const emitCardDisconnect = registerListener(
-//   "smartcard",
-//   "listenCardDisconnected"
-// );
-// registerListener("smartcard", "listenForDevices", (emit) => {
-//   scDevices.on("device-activated", (event) => {
-//     emit(win, event.devices);
-//   });
-//   scDevices.on("device-deactivated", (event) => {
-//     emit(win, event.devices);
-//   });
-// });
-// registerHandle("smartcard", "getDevices", () => {
-//   return scDevices.listDevices().map((d) => d.name);
-// });
-// registerHandle(
-//   "smartcard",
-//   "waitForDevices",
-//   () =>
-//     new Promise((resolve, reject) => {
-//       scDevices.on("device-activated", (event) => {
-//         resolve(event.devices);
-//       });
-//     })
-// );
-// registerHandle(
-//   "smartcard",
-//   "waitForCard",
-//   (device) =>
-//     new Promise((resolve, reject) => {
-//       const d = scDevices.lookup(device);
-//       d.on("card-inserted", (event) => {
-//         resolve(event.card.getAtr());
-//       });
-//       d.on("card-removed", (event) => {
-//         emitCardDisconnect(win);
-//       });
-//     })
-// );
-
 const createWindow = () => {
   const _win = new BrowserWindow({
     width: 1200,
     height: 800,
     minHeight: 700,
     minWidth: 500,
+    frame: false,
+    titleBarStyle: "hidden",
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
     },

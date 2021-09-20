@@ -8,6 +8,9 @@
   cursor: pointer;
 
 }
+.select:active, .select:focus-visible {
+  outline: none;
+}
 .select option {
   height: 40px;
   background: #fff;

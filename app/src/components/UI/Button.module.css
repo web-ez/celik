@@ -28,13 +28,13 @@
   transition: all 0.3s ease;
 }
 .button:disabled {
-  color: lightgray;
-  border-color: lightgray;
+  color: #aaa;
+  border-color: #aaa;
 }
 .button:hover:not(:disabled) {
   color: #2b536b;
 }
-.button:hover:after {
+.button:not(:disabled):hover:after {
   left: 0;
   width: 100%;
 }

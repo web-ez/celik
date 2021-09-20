@@ -1,0 +1,19 @@
+.menubar {
+  height: 2rem;
+  z-index: 999;
+  width: 100%;
+  background-color: burlywood;
+  position: fixed;
+  padding-left: 1rem;
+  font-size: 1rem;
+  line-height: 2rem;
+  box-sizing: border-box;
+  color: #2b536b;
+  -webkit-app-region: drag;
+}
+.menubar span {
+  font-weight: 500;
+}
+.container {
+  height: 100vh;
+}

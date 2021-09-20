@@ -3,7 +3,7 @@ import { MUPCelikApi } from "node_celik";
 
 export type CelikAPICtx = {
   init: (device: string) => Promise<boolean>;
-  getAllData: () => Promise<any>;
+  getAllData: typeof MUPCelikApi.prototype.readAllData;
 };
 
 const { registerHandle, registerListener, exposeHandles } =
@@ -37,7 +37,7 @@ const CelikAPIContext: ContextObject = {
         return await api.readAllData();
       } catch (e: any) {
         console.log("Error:", e);
-        return {};
+        throw e;
       }
     });
   },

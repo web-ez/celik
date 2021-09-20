@@ -1,10 +1,11 @@
 div#main {
   text-align: center;
   display: table;
-  height: 100vh;
-  width: 100vw;
+  height: 100%;
+  width: 100%;
 }
 div#main > div {
   vertical-align: middle;
   display: table-cell;
+  padding-top: 2rem;
 }
