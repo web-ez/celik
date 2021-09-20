@@ -3,10 +3,10 @@ import useBridgeContext from "../../util/use-bridge-ctx";
 
 import styles from "./Menubar.module.css";
 
-const MINIMIZE_ICON = "/menubar/minimize.png";
+const MINIMIZE_ICON = "./menubar/minimize.png";
 const MAXIMIZE_ICON = (b: boolean) =>
-  `/menubar/${b ? "maximized" : "maximize"}.png`;
-const CLOSE_ICON = "/menubar/close.png";
+  `./menubar/${b ? "maximized" : "maximize"}.png`;
+const CLOSE_ICON = "./menubar/close.png";
 
 const Menubar: React.FC = () => {
   const menuCtx = useBridgeContext("menu");

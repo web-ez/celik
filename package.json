@@ -6,6 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
+    "start-prod": "npm run react-build && electron .",
     "start": "npm-run-all -p react-start start-dev",
     "start-dev": "wait-on tcp:3000 && npm run build && electron . --dev",
     "dev": "npm run react-start & npm run start-dev",

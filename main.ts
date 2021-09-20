@@ -19,7 +19,7 @@ const createWindow = () => {
   });
 
   if (isDev()) _win.loadURL("http://localhost:3000");
-  else _win.loadFile(path.join(__dirname, "..", "app", "build", "index.html"));
+  else _win.loadURL(path.join(__dirname, "..", "app", "build", "index.html"));
 
   onCreatedWindow(_win);
   return _win;
