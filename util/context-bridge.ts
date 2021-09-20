@@ -1,5 +1,6 @@
 import { BrowserWindow, contextBridge, ipcMain, ipcRenderer } from "electron";
 import { CelikAPICtx } from "./context/celik";
+import { MenubarCtx } from "./context/menubar";
 import { SmartcardCtx } from "./context/smartcard";
 
 type StringKey<T> = keyof T & string;
@@ -18,6 +19,7 @@ type TransformedToPromises<T extends Record<string, fn>> = {
 type AppContext = {
   smartcard: SmartcardCtx;
   celik: CelikAPICtx;
+  menu: MenubarCtx;
 };
 export type ContextKey = StringKey<AppContext>;
 export type ContextType<T extends ContextKey> = TransformedToPromises<

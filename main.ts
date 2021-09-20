@@ -1,6 +1,7 @@
 import { app, BrowserWindow } from "electron";
 import * as path from "path";
 import CelikAPIContext from "./util/context/celik";
+import MenubarContext from "./util/context/menubar";
 import SmartcardContext from "./util/context/smartcard";
 import { isDev } from "./util/is-dev";
 
@@ -25,6 +26,7 @@ const createWindow = () => {
 };
 
 const onCreatedWindow = (w: BrowserWindow) => {
+  MenubarContext.init(w);
   SmartcardContext.init(w);
   CelikAPIContext.init(w);
 };

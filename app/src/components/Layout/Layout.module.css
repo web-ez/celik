@@ -10,9 +10,33 @@
   box-sizing: border-box;
   color: #2b536b;
   -webkit-app-region: drag;
+  cursor: default;
 }
-.menubar span {
+.menubar span:first-child {
   font-weight: 500;
+}
+.right {
+  display: inline-block;
+  position: inherit;
+  right: 0;
+}
+.btn {
+  height: 100%;
+  display: inline-block;
+  padding: 0 20px;
+  -webkit-app-region: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+.btn img {
+  height: 0.8rem;
+  width: 0.8rem;
+}
+.btn:last-child:hover {
+  background-color: red;
+}
+.btn:hover {
+  background-color: rgba(255, 255, 255, 0.3);
 }
 .container {
   height: 100vh;
