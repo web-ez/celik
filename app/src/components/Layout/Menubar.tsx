@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useBridgeContext from "../../util/use-bridge-ctx";
 
 import styles from "./Menubar.module.css";
@@ -13,10 +13,9 @@ const Menubar: React.FC = () => {
 
   const [maximized, setMaximized] = useState(false);
 
-  const maximize = async () => {
-    await menuCtx.maximize();
-    setMaximized(await menuCtx.isMaximized());
-  };
+  useEffect(() => {
+    menuCtx.listenMaximizedChanged(setMaximized);
+  }, [menuCtx]);
 
   return (
     <div className={styles.menubar}>
@@ -25,7 +24,7 @@ const Menubar: React.FC = () => {
         <div className={styles.btn} onClick={() => menuCtx.minimize()}>
           <img src={MINIMIZE_ICON} alt="" />
         </div>
-        <div className={styles.btn} onClick={maximize}>
+        <div className={styles.btn} onClick={() => menuCtx.maximize()}>
           <img src={MAXIMIZE_ICON(maximized)} alt="" />
         </div>
         <div className={styles.btn} onClick={() => menuCtx.close()}>

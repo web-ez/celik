@@ -5,6 +5,7 @@ export type MenubarCtx = {
   maximize: () => void;
   close: () => void;
   isMaximized: () => boolean;
+  listenMaximizedChanged: (listeFn: (isMaximized: boolean) => void) => void;
 };
 
 const { registerHandle, registerListener, exposeHandles } =
@@ -12,6 +13,10 @@ const { registerHandle, registerListener, exposeHandles } =
 
 const MenubarContext: ContextObject = {
   init: (win) => {
+    registerListener("listenMaximizedChanged", (emit) => {
+      win.on("maximize", () => emit(win, win.isMaximized()));
+      win.on("unmaximize", () => emit(win, win.isMaximized()));
+    });
     registerHandle("minimize", () => {
       win.minimize();
     });
@@ -23,6 +28,13 @@ const MenubarContext: ContextObject = {
     });
     registerHandle("isMaximized", () => win.isMaximized());
   },
-  expose: () => exposeHandles(["minimize", "maximize", "close", "isMaximized"]),
+  expose: () =>
+    exposeHandles([
+      "minimize",
+      "maximize",
+      "close",
+      "isMaximized",
+      "listenMaximizedChanged",
+    ]),
 };
 export default MenubarContext;
