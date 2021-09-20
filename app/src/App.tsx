@@ -1,51 +1,56 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import "./App.css";
+import DeviceSelect from "./components/smartcard/DeviceSelect";
+import Button from "./components/UI/Button";
 import useBridgeContext from "./util/use-bridge-ctx";
 import { useSmartcard } from "./util/use-smartcard";
 
 function App() {
   const celikCtx = useBridgeContext("celik");
-  const { device, devices, card, pickDevice } = useSmartcard();
+  const { device, card } = useSmartcard();
 
-  const [selectedDevice, setSelectedDevice] = useState("");
+  const [data, setData] = useState("");
 
-  console.log("Loaded.");
-
-  useEffect(() => {
+  const clickHandle = () => {
     if (!card) return;
 
     celikCtx.init(device).then((succ) => {
       if (succ) {
         console.log("Fetching data...");
-        celikCtx.getAllData().then((v) => console.log(v));
+        celikCtx.getAllData().then((v) => setData(JSON.stringify(v, null, 2)));
       } else {
         console.log("Error!");
       }
     });
-  }, [card, device, celikCtx]);
-
-  const clickHandle = () => pickDevice(selectedDevice);
+  };
 
   return (
-    <div>
-      <h1>Hello World!</h1>
-      <p>Bemis</p>
-      <p>Available Devices: {devices}</p>
-      <select onChange={(e) => setSelectedDevice(e.target.value)}>
-        {devices.map((d, i) => (
-          <option key={i} value={d}>
-            {d}
-          </option>
-        ))}
-        <option value="XD">XD</option>
-      </select>
-      <br />
-      <br />
-      <p>
-        Device: {device} <br />
-        Card: {card}
-      </p>
-      <button onClick={clickHandle}>Pick 1st Device</button>
+    <div id="main">
+      <div>
+        <h1>Card Reader</h1>
+        <DeviceSelect />
+        <br />
+        <br />
+        <p>
+          Device: {device || "<none>"} <br />
+          Card: {card || (device ? "Waiting..." : "<none>")}
+        </p>
+        <Button onClick={clickHandle} disabled={!card}>
+          Get Data
+        </Button>
+        {card && data && (
+          <pre
+            style={{
+              background: "whitesmoke",
+              color: "darkblue",
+              fontSize: "1rem",
+              padding: "1rem",
+            }}
+          >
+            {data}
+          </pre>
+        )}
+      </div>
     </div>
   );
 }

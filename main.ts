@@ -52,8 +52,10 @@ import { isDev } from "./util/is-dev";
 
 const createWindow = () => {
   const _win = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1200,
+    height: 800,
+    minHeight: 700,
+    minWidth: 500,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
     },

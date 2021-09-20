@@ -1,48 +1,56 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
+import { SmartcardContext } from "../context/smartcard";
 import useBridgeContext from "./use-bridge-ctx";
 
 export const useSmartcard = () => {
   const smartcardCtx = useBridgeContext("smartcard");
-
-  const [devices, setDevices] = useState<string[]>([]);
-  const [device, setDevice] = useState("");
-  const [card, setCard] = useState("");
+  const { card, device, devices, pickDevice, setState } =
+    useContext(SmartcardContext);
 
   useEffect(() => {
-    smartcardCtx.getDevices().then((devs) => setDevices(devs));
-  }, [smartcardCtx]);
+    smartcardCtx.getDevices().then((devs) =>
+      setState((prev) => {
+        return { ...prev, devices: devs };
+      })
+    );
+  }, [smartcardCtx, setState]);
 
   useEffect(() => {
     smartcardCtx.removeListeners("listenForDevices");
     smartcardCtx.listenForDevices((devs) => {
       console.log("Devices:", devs);
-      setDevices(devs.map((d) => d.name));
+      setState((prev) => {
+        return { ...prev, devices: devs.map((d) => d.name) };
+      });
     });
-  }, [smartcardCtx]);
+  }, [smartcardCtx, setState]);
 
   useEffect(() => {
     if (!device) return;
     console.log("Picked device: ", device);
     smartcardCtx.waitForCard(device).then((x) => {
       console.log("Card Inserted", x);
-      setCard(x);
+      setState((prev) => {
+        return { ...prev, card: x };
+      });
     });
-  }, [device, smartcardCtx]);
+  }, [device, smartcardCtx, setState]);
 
   useEffect(() => {
     if (!card) return;
     smartcardCtx.listenCardDisconnected(() => {
       console.log("Card Removed.");
       smartcardCtx.removeListeners("listenCardDisconnected");
-      setCard("");
-      setDevice("");
+      setState((prev) => {
+        return { ...prev, card: "", device: "" };
+      });
     });
-  }, [card, smartcardCtx]);
+  }, [card, smartcardCtx, setState]);
 
   return {
-    devices,
-    device,
     card,
-    pickDevice: setDevice,
+    device,
+    devices,
+    pickDevice,
   };
 };
