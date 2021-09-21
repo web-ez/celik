@@ -1,4 +1,11 @@
-import { createContext, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+import useBridgeContext from "../util/use-bridge-ctx";
 
 type SmartcardState = {
   card: string;
@@ -8,7 +15,7 @@ type SmartcardState = {
 export const SmartcardContext = createContext<
   SmartcardState & {
     pickDevice: (dev: string) => void;
-    setState: (fn: (prev: SmartcardState) => SmartcardState) => void;
+    setState: (newState: Partial<SmartcardState>) => void;
   }
 >({
   card: "",
@@ -18,17 +25,68 @@ export const SmartcardContext = createContext<
   setState: () => {},
 });
 
+const _logChanges = (
+  prevState: SmartcardState,
+  newState: Partial<SmartcardState>
+) => {
+  if (!!newState.device && newState.device !== prevState.device)
+    console.log("Picked device: ", newState.device);
+  if (!!newState.card && newState.card !== prevState.card)
+    console.log("Card inserted: ", newState.card);
+  if (!!newState.devices) console.log("Devices: ", newState.devices);
+  if (newState.card === "" && prevState.card !== "")
+    console.log("Card removed.");
+};
+
 const SmartcardProvider: React.FC = (props) => {
-  const [state, setState] = useState<SmartcardState>({
+  const smartcardCtx = useBridgeContext("smartcard");
+  const [state, _setState] = useState<SmartcardState>({
     card: "",
     devices: [],
     device: "",
   });
 
-  const pickHandler = (device: string) =>
-    setState((prev) => {
-      return { ...prev, device };
+  const setState = useCallback(
+    (obj: Partial<SmartcardState>) => {
+      _setState((prev) => {
+        _logChanges(prev, obj);
+        return { ...prev, ...obj };
+      });
+    },
+    [_setState]
+  );
+
+  const pickHandler = (device: string) => setState({ device });
+
+  useEffect(() => {
+    /* Init Devices */
+    smartcardCtx.getDevices().then((devs) => setState({ devices: devs }));
+  }, [smartcardCtx, setState]);
+
+  useEffect(() => {
+    /* Listen for devices activate/deactivate */
+    smartcardCtx.removeListeners("listenForDevices");
+    smartcardCtx.listenForDevices((devs) =>
+      setState({ devices: devs.map((d) => d.name) })
+    );
+  }, [smartcardCtx, setState]);
+
+  useEffect(() => {
+    if (!state.device) return;
+    /* On Device Picked */
+    smartcardCtx.waitForCard(state.device).then((x) => {
+      setState({ card: x });
     });
+  }, [state.device, smartcardCtx, setState]);
+
+  useEffect(() => {
+    if (!state.card) return;
+    /* On Card Removed */
+    smartcardCtx.listenCardDisconnected(() => {
+      smartcardCtx.removeListeners("listenCardDisconnected");
+      setState({ card: "", device: "" });
+    });
+  }, [state.card, smartcardCtx, setState]);
 
   return (
     <SmartcardContext.Provider
@@ -43,3 +101,14 @@ const SmartcardProvider: React.FC = (props) => {
   );
 };
 export default SmartcardProvider;
+
+export const useSmartcard = () => {
+  const { card, device, devices, pickDevice } = useContext(SmartcardContext);
+
+  return {
+    card,
+    device,
+    devices,
+    pickDevice,
+  };
+};

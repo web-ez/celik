@@ -7,7 +7,7 @@ import Button from "./components/UI/Button";
 import LKDisplay from "./components/display/LKDisplay";
 import { LKData } from "./util/types";
 import useBridgeContext from "./util/use-bridge-ctx";
-import { useSmartcard } from "./util/use-smartcard";
+import { useSmartcard } from "./context/smartcard";
 
 function App() {
   const celikCtx = useBridgeContext("celik");

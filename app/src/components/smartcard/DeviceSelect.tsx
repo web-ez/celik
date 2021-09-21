@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useSmartcard } from "../../util/use-smartcard";
+import { useSmartcard } from "../../context/smartcard";
 import Button from "../UI/Button";
 
 import styles from "./DeviceSelect.module.css";

@@ -1,14 +1,15 @@
 {
   "name": "celik",
   "version": "1.0.0",
-  "description": "",
+  "description": "Citac licne karte sa cipom.",
   "main": "./dist/main.js",
   "build": {
     "appId": "rs.web-ez.celik",
     "productName": "Celik v2",
     "directories": {
       "output": "build",
-      "app": "."
+      "app": ".",
+      "buildResources": "resources"
     },
     "files": [
       "dist",
