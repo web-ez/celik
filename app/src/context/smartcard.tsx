@@ -32,7 +32,7 @@ const _logChanges = (
   if (!!newState.device && newState.device !== prevState.device)
     console.log("Picked device: ", newState.device);
   if (!!newState.card && newState.card !== prevState.card)
-    console.log("Card inserted: ", newState.card);
+    console.log("Card detected: ", newState.card);
   if (!!newState.devices) console.log("Devices: ", newState.devices);
   if (newState.card === "" && prevState.card !== "")
     console.log("Card removed.");
@@ -103,12 +103,19 @@ const SmartcardProvider: React.FC = (props) => {
 export default SmartcardProvider;
 
 export const useSmartcard = () => {
-  const { card, device, devices, pickDevice } = useContext(SmartcardContext);
+  const {
+    card,
+    device,
+    devices,
+    pickDevice: pick,
+  } = useContext(SmartcardContext);
 
   return {
     card,
     device,
     devices,
-    pickDevice,
+    pickDevice: (dev: string) => {
+      if (dev !== device) pick(dev);
+    },
   };
 };

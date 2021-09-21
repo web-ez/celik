@@ -9,13 +9,13 @@ import { LKData } from "./util/types";
 import useBridgeContext from "./util/use-bridge-ctx";
 import { useSmartcard } from "./context/smartcard";
 
+const auto = true;
+
 function App() {
   const celikCtx = useBridgeContext("celik");
   const { device, card } = useSmartcard();
 
   const [data, setData] = useState<LKData | null>(null);
-
-  if (!card && !!data) setData(null);
 
   const clickHandle = async () => {
     if (!card) return;
@@ -30,22 +30,26 @@ function App() {
     }
   };
 
+
   return (
     <Layout>
       <div id="main">
         <div>
           <h1>Card Reader</h1>
-          <DeviceSelect autoSelect />
+          <DeviceSelect autoSelect={auto} />
           <br />
           <br />
           <p>
             Device: {device || "<none>"} <br />
             Card: {card || (device ? "Waiting..." : "<none>")}
           </p>
-          <Button onClick={clickHandle} disabled={!card}>
-            Get Data
-          </Button>
-          {data && <LKDisplay data={data} />}
+          {!auto && (
+            <Button onClick={clickHandle} disabled={!card}>
+              Get Data
+            </Button>
+          )}
+          {!auto && data && <LKDisplay data={data} />}
+          {auto && <LKDisplay auto />}
         </div>
       </div>
     </Layout>

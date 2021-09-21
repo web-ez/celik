@@ -1,16 +1,27 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSmartcard } from "../../context/smartcard";
 import Button from "../UI/Button";
 
 import styles from "./DeviceSelect.module.css";
 
 const DeviceSelect: React.FC<{ autoSelect?: boolean }> = (props) => {
-  const { devices, pickDevice } = useSmartcard();
+  const { device, devices, pickDevice } = useSmartcard();
 
   const [selectedDevice, setSelectedDevice] = useState("");
 
-  if (props.autoSelect && devices.length > 0 && devices[0] !== selectedDevice)
-    setSelectedDevice(devices[0]);
+  useEffect(() => {
+    if (
+      selectedDevice === "" ||
+      (devices.length > 0 && devices[0] !== selectedDevice)
+    )
+      setSelectedDevice(devices[0]);
+
+    if (props.autoSelect && device === "")
+      setTimeout(
+        () => pickDevice(devices[0]),
+        0
+      ); /* setTimeout avoids render error! */
+  }, [props.autoSelect, device, devices, selectedDevice, pickDevice]);
 
   return (
     <>
@@ -19,14 +30,14 @@ const DeviceSelect: React.FC<{ autoSelect?: boolean }> = (props) => {
         value={selectedDevice}
         onChange={(e) => setSelectedDevice(e.target.value)}
       >
-        {["", ...devices].map((d, i) => (
+        {[...devices].map((d, i) => (
           <option key={i} value={d}>
             {d}
           </option>
         ))}
       </select>
       <Button
-        disabled={!selectedDevice}
+        disabled={!selectedDevice || selectedDevice === device}
         onClick={() => pickDevice(selectedDevice)}
       >
         Pick
