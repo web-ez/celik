@@ -35,7 +35,9 @@ const CelikAPIContext: ContextObject = {
     registerHandle("getAllData", async () => {
       try {
         console.log("CELIK: Reading data.");
-        return await api.readAllData();
+        const d =  await api.readAllData();        
+        console.log("CELIK: Reading success!");
+        return d;
       } catch (e: any) {
         console.log("Error:", e);
         throw e;
