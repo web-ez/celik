@@ -4,10 +4,13 @@ import Button from "../UI/Button";
 
 import styles from "./DeviceSelect.module.css";
 
-const DeviceSelect: React.FC = () => {
+const DeviceSelect: React.FC<{ autoSelect?: boolean }> = (props) => {
   const { devices, pickDevice } = useSmartcard();
 
   const [selectedDevice, setSelectedDevice] = useState("");
+
+  if (props.autoSelect && devices.length > 0 && devices[0] !== selectedDevice)
+    setSelectedDevice(devices[0]);
 
   return (
     <>

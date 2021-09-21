@@ -42,11 +42,13 @@ const SmartcardContext: ContextObject = {
       (device) =>
         new Promise((resolve, reject) => {
           const d = scDevices.lookup(device);
-          d.on("card-inserted", (event) => {
-            resolve(event.card.getAtr());
-          });
+
           d.on("card-removed", (event) => {
             emitCardDisconnect(win);
+          });
+          if (d.card) resolve(d.card.getAtr());
+          d.on("card-inserted", (event) => {
+            resolve(event.card.getAtr());
           });
         })
     );

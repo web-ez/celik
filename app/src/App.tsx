@@ -35,7 +35,7 @@ function App() {
       <div id="main">
         <div>
           <h1>Card Reader</h1>
-          <DeviceSelect />
+          <DeviceSelect autoSelect />
           <br />
           <br />
           <p>

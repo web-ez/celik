@@ -19,6 +19,7 @@ type Device = {
   on: <T extends keyof CardEvents>(key: T, fn: CardEvents[T]) => void;
   getName: () => string;
   name: string;
+  card: Card | null;
 };
 type Card = {
   getAtr: () => string;
