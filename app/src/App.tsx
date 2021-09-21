@@ -30,7 +30,6 @@ function App() {
     }
   };
 
-
   return (
     <Layout>
       <div id="main">
@@ -40,8 +39,8 @@ function App() {
           <br />
           <br />
           <p>
-            Device: {device || "<none>"} <br />
-            Card: {card || (device ? "Waiting..." : "<none>")}
+            Device: <b>{device || "<none>"}</b> <br />
+            Card: <em>{card || (device ? "Waiting..." : "<none>")}</em>
           </p>
           {!auto && (
             <Button onClick={clickHandle} disabled={!card}>

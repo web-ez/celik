@@ -43,7 +43,13 @@ const Error: React.FC<{ message?: string }> = React.memo((props) => {
   );
 });
 const Loading: React.FC = React.memo(() => {
-  return <>LOADING...</>;
+  return (
+    <div className={styles["lds-facebook"]}>
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+  );
 });
 const LKDisplay: React.FC<{ data: LKData; auto?: false } | { auto: true }> = (
   props
@@ -86,6 +92,7 @@ const LKDisplay: React.FC<{ data: LKData; auto?: false } | { auto: true }> = (
       {!!data && <Data data={data} />}
       {!!error && <Error message={error} />}
       {!!loading && <Loading />}
+      {!card && <p className={styles.insertCard}>Insert Card</p>}
     </>
   );
 };
