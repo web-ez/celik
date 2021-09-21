@@ -88,12 +88,12 @@ const LKDisplay: React.FC<{ data: LKData; auto?: false } | { auto: true }> = (
   if (!card && !!data) setData(null);
 
   return (
-    <>
+    <div className={styles.scrollable}>
       {!!data && <Data data={data} />}
       {!!error && <Error message={error} />}
       {!!loading && <Loading />}
       {!card && <p className={styles.insertCard}>Insert Card</p>}
-    </>
+    </div>
   );
 };
 export default LKDisplay;

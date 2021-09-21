@@ -8,4 +8,6 @@ body {
   background-color: #2b536b;
   color: whitesmoke;
   height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
 }
