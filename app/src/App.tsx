@@ -17,17 +17,17 @@ function App() {
 
   if (!card && !!data) setData(null);
 
-  const clickHandle = () => {
+  const clickHandle = async () => {
     if (!card) return;
 
-    celikCtx.init(device).then((succ) => {
-      if (succ) {
-        console.log("Fetching data...");
-        celikCtx.getAllData().then((v) => setData(v));
-      } else {
-        console.log("Error!");
-      }
-    });
+    try {
+      await celikCtx.init(device);
+      console.log("Fetching data...");
+      const res = await celikCtx.getAllData();
+      setData(res);
+    } catch (e: any) {
+      console.log("Error!", e);
+    }
   };
 
   return (

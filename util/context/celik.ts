@@ -1,8 +1,9 @@
 import { ContextObject, createContext } from "../context-bridge";
 import { MUPCelikApi } from "node_celik";
+import * as log from "electron-log";
 
 export type CelikAPICtx = {
-  init: (device: string) => Promise<boolean>;
+  init: (device: string) => void;
   getAllData: typeof MUPCelikApi.prototype.readAllData;
 };
 
@@ -20,14 +21,14 @@ const CelikAPIContext: ContextObject = {
           await api.endRead();
           await api.startRead(dev);
           console.log("CELIK: Restarted reading.");
-          return true;
+          return;
         }
         console.log("CELIK: Creating Api.");
         api = new MUPCelikApi(dev);
-        return true;
       } catch (e: any) {
         console.log(e);
-        return false;
+        log.error(e);
+        throw e;
       }
     });
 
